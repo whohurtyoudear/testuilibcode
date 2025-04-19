@@ -97,8 +97,28 @@ local Themes = {
 }
 
 -- Variables
-local LocalPlayer = Players.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
+local LocalPlayer
+local Mouse
+-- Safely get LocalPlayer and Mouse with error handling for executors
+local playerSuccess, playerError = pcall(function()
+    LocalPlayer = Players.LocalPlayer
+    if LocalPlayer then
+        Mouse = LocalPlayer:GetMouse()
+    end
+end)
+
+if not playerSuccess then
+    print("SynthwaveUI: Error getting LocalPlayer or Mouse: " .. tostring(playerError))
+    -- Create fallbacks
+    LocalPlayer = {
+        UserId = 0,
+        DisplayName = "User",
+        Name = "User",
+        GetMouse = function() return {} end
+    }
+    Mouse = {X = 0, Y = 0}
+end
+
 local SynthwaveUI = {}
 local DraggingUI = false
 local SelectedTab = nil
